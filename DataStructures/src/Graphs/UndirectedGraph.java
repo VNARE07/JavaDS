@@ -4,93 +4,179 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import Heaps.Heap;
+import Heaps.MinHeap;
+import Heaps.Node;
 import TreeCollection.GenericComparator;
 
 public class UndirectedGraph<T extends Comparable<T>> implements Graph<T> {
-    HashMap<T,ArrayList<T>> graph = new HashMap<T,ArrayList<T>>();
-    GenericComparator<T> kc = new GenericComparator<T>();
-    public UndirectedGraph() {
-
+    HashMap<T,ArrayList<Edge<T>>> graph = new HashMap<T,ArrayList<Edge<T>>>();
+    GenericComparator<T> gc = new GenericComparator<T>();
+    public UndirectedGraph(Graph<T> graph) {
+        this.graph = graph.getGraph();
+    }
+    public UndirectedGraph(){
     }
     @Override
     public void addGraph(Graph<T> graph) {
         // TODO Auto-generated method stub
-        
+        System.out.println("to do");
     }
 
     @Override
     public void removeGraph(Graph<T> graph) {
         // TODO Auto-generated method stub
-        
+        System.out.println("to do");
     }
 
     @Override
-    public void addEdge(T s, T e) {
+    public void addEdge(T s, T e,double weight) {
         // TODO Auto-generated method stub
         if (this.graph.containsKey(s)){
-            boolean bol = true;
-            for (T t : this.graph.get(s)){
-                if (kc.comparevalues(t,e) == 0){
-                    bol = false;
-                }
-            }
-            if (bol){
-                this.graph.get(s).add(e);
-            }
-        }   
-        else{
-            ArrayList al = new ArrayList<T>();
-            al.add(e);
-            this.graph.put(s,al);
+            ArrayList<Edge<T>> edges = this.graph.get(s);
+            edges.add(new Edge<T>(e, weight));
         }
-        if (!this.graph.containsKey(e)){
-            ArrayList<T> al1 = new ArrayList<T>();
-            this.graph.put(e,al1);
+        else{
+            ArrayList<Edge<T>> edges = new ArrayList<Edge<T>>();
+            edges.add(new Edge<T>(e, weight));
+            this.graph.put(s, edges);
+        }
+        if (this.graph.containsKey(e)){
+            ArrayList<Edge<T>> edges = this.graph.get(e);
+            edges.add(new Edge<T>(s, weight));
+        }
+        else{
+            ArrayList<Edge<T>> edges = new ArrayList<Edge<T>>();
+            edges.add(new Edge<T>(s, weight));
+            this.graph.put(e, edges);
         }
     }
 
+
     @Override
-    public void createGraph(List<AdjNode<T>> list) {
+    public void DFS(T start) {
         // TODO Auto-generated method stub
-        T s,e;
-        for (int i = 0; i < list.size();i++){ 
-            AdjNode<T> node = list.get(i);
-            s = node.getD();
-            e = node.getE();
-            this.addEdge(s, e);
-        }
-    }
-    public void DFS(T start){
+        System.out.println(graph);
         HashMap<T,Boolean> done = new HashMap<T,Boolean>();
         ArrayList<T> stack = new ArrayList<T>();
+        T head,node;
+        Edge<T> edge;
         stack.add(start);
-        T data,nei;
         while (true){
             if (stack.size() == 0){
                 break;
             }
             else{
-                data = stack.remove(stack.size()-1);
-                if (done.containsKey(data)){
-                    System.out.println("node visited");
-                }
-                else{
-                    System.out.println(data);
-                    done.put(data,true);
-                    ArrayList<T> al = this.graph.get(data);
-                    for (int i = 0;i < this.graph.get(data).size();i++){
-                        nei = al.get(i);
-                        if (done.containsKey(nei)){
-                            System.out.println("neibour is vsieted");
-                        }
-                        else{
-                            stack.add(nei);
-                            done.put(data,true);
+                head = stack.remove(stack.size() - 1);
+                done.put(head, true);
+                System.out.println(head);
+                ArrayList<Edge<T>> edges = this.graph.get(head);
+                for (int i = 0; i < edges.size(); i++){
+                    edge = edges.get(i);
+                    node = edge.getNode();
+                    if (!done.containsKey(node)){
+                        stack.add(node);
+                        done.put(node, true);
+                    }
+                }   
+            }
+        }
+    }
+
+    @Override
+    public void createGraph(List<T> elist,List<Double> weights) {
+        // TODO Auto-generated method stub
+        int start = 0;
+        int count = 0;
+        int lim = elist.size()-1;
+        T s,e;
+        double weight;
+        while (true){
+            if (start > lim){
+                break;
+            }
+            else{
+                s = elist.get(start);
+                e = elist.get(start+1);
+                weight = weights.get(count);
+                count = count + 1;
+                start = start + 2;
+                this.addEdge(s, e, weight);
+            }
+        }
+        
+    }
+    @Override
+    public HashMap<T, ArrayList<Edge<T>>> getGraph() {
+        // TODO Auto-generated method stub
+        return this.graph;
+    }
+    public ArrayList<T> ShortestPath(T s,T d){
+        HashMap<T,Double> distance = new HashMap<T,Double>();
+        ArrayList<T> keys = new ArrayList<T>(this.graph.keySet());
+        HashMap<T,Boolean> done = new HashMap<T,Boolean>();
+        MinHeap<Double,Gnode<T>> minHeap = new MinHeap<Double,Gnode<T>>(0.0,new Gnode<T>(s,null));
+        Node<Double,Gnode<T>> head;
+        Double wei,cwei;
+        Gnode<T> gnode;
+        T node,child,nex,p;
+        Edge<T> edge;
+        ArrayList<Edge<T>> edges;
+        ArrayList<T> path = new ArrayList<T>();
+        HashMap<T,T> par = new HashMap<T,T>(); 
+        for (int i = 0; i < keys.size(); i++){
+            distance.put(keys.get(i),-1.0);
+        }
+        while (true){
+            head = minHeap.remove();
+            System.out.println(head);
+            if (head == null){
+                break;
+            }
+            else{
+                gnode = head.getValue();
+                node = gnode.getC();
+                p = gnode.getP();
+                wei = head.getKey();
+                System.out.println(node + ": " +wei);
+                if (!done.containsKey(node)){
+                    done.put(node, true);
+                    edges = this.graph.get(node);
+                    distance.put(node,wei);
+                    par.put(node,p);
+                    for (int i = 0; i <  edges.size(); i++){
+                        edge = edges.get(i);
+                        child = edge.getNode();
+                        cwei = edge.getWeight();
+                        if (!done.containsKey(child)){
+                            minHeap.put(wei+cwei,new Gnode<T>(child,node));
                         }
                     }
                 }
             }
         }
+        System.out.println(distance);
+        System.out.println(par);
+        if (distance.containsKey(d)){
+            if (distance.get(d) == -1.0){
+                System.out.println("no path exists");
+                return null;
+            }
+            node = d;
+            while (true){
+                if (node == null){
+                    break;
+                }
+                else{
+                    path.add(node);
+                    node = par.get(node);
+                }
+            }
+            return path;
+        }
+        else{
+            System.out.println("no path exists");
+        }
+        return null;
     }
-    
-}
+}    

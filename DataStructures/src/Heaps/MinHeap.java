@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import TreeCollection.GenericComparator;
 
-public class MinHeap<K extends Comparable<K>,V extends Comparable<V>> implements Heap<K,V> {
+public class MinHeap<K extends Comparable<K>,V> implements Heap<K,V> {
     ArrayList<Node<K,V>> heap = new ArrayList<Node<K,V>>(); 
     GenericComparator<K> kc = new GenericComparator<K>();
     int size = 0;

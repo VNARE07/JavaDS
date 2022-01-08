@@ -1,6 +1,6 @@
 package Heaps;
 
-public interface Heap<K extends Comparable<K>,V extends Comparable<V>> {
+public interface Heap<K extends Comparable<K>,V> {
     public void put(K key, V value);
     public Node<K,V> remove();
     public void bubble(int child);

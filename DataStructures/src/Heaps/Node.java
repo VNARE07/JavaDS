@@ -10,4 +10,10 @@ public class Node<K,V> {
     public String toString() {
         return "key " + key + " value " + value;
     }
+    public K getKey() {
+        return this.key;
+    }
+    public V getValue(){
+        return this.value;
+    }
 }
