@@ -42,6 +42,17 @@ public class Stack<T> {
             return head;
         }
     }
+    public T popEle(){
+        if (isEmpty()){
+            return null;
+        }
+        else{
+            Node<T> head = this.head;
+            Node<T> fol = head.next;
+            this.head = fol;
+            return head.data;
+        }
+    }
     private boolean isEmpty() {
         if (this.head == null){
             return true;
