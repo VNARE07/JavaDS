@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 public class Trie {
     HashMap<Character,TrieNode> trie = new HashMap<Character,TrieNode>();
-    public Trie() {
+    public Trie(){
     }
     public void delete(String str){
         boolean bol = true;
@@ -53,7 +53,7 @@ public class Trie {
                         head1 = node.getMap();
                         System.out.println(head + " " + head1);
                         if (head1.isEmpty()){
-                            head.remove(c);   
+                            head.remove(c);  
                         }
                         else{
                             break;
