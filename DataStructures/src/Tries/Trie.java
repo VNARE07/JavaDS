@@ -114,4 +114,7 @@ public class Trie {
         }
         cur.put('$',new TrieNode());
     }
+    public void searilize(){
+        
+    }
 }
