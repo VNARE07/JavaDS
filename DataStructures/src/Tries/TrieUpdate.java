@@ -19,22 +19,29 @@ public class TrieUpdate {
             String ls = System.getProperty("line.separator");
             try {
                 while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
                     stringBuilder.append(line);
-                    stringBuilder.append(ls);
                 }
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             // delete the last new line separator
-            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            if (stringBuilder.length() > 0)
+                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
             try {
                 reader.close();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            String content = stringBuilder.toString();
+            String content = "";
+            if (stringBuilder.length() > 0){
+                content = stringBuilder.toString();
+            }
+            else{
+                content = "";
+            }
             System.out.println("readComplete: " + content);
             if (content.length() != 0){
                 this.trie = this.deserialize(content);
@@ -157,9 +164,9 @@ public class TrieUpdate {
         ArrayList<HashMap<Character,TrieNode>> upnode = new ArrayList<HashMap<Character,TrieNode>>();
         ArrayList<String> status = new ArrayList<String>();
         ArrayList<Character> stack = new ArrayList<Character>(this.trie.getMap().keySet());
+        upnode.add(d1);
         for (int i = 0; i < stack.size(); i++){
             status.add("ud");
-            upnode.add(d1);
         }
         // System.out.println(stack);
         // System.out.println(upnode);
@@ -173,29 +180,30 @@ public class TrieUpdate {
             }
             else{
                 head = stack.remove(stack.size()-1);
-                map1 = upnode.remove(upnode.size()-1);
+                map1 = upnode.get(upnode.size()-1);
                 s = status.remove(status.size()-1);
                 if (s.equals("ud")){
                     stack.add(head);
-                    upnode.add(map1);
                     status.add("d");
                     save = save + head;
                     map2 = map1.get(head).getMap();
+                    upnode.add(map2);
                     ArrayList<Character> children = new ArrayList<Character>(map2.keySet());
                     // System.out.println(stack);
                     // System.out.println(upnode);
                     for (int i = 0; i < children.size();i++){
                         child = children.get(i);
                         stack.add(child);
-                        upnode.add(map2);
                         status.add("ud");
                     }
                 }
                 else{
                     save = save + ")";
+                    upnode.remove(upnode.size()-1);
                 }
             }
         }
+        System.out.println("new save file");
         System.out.println(save);
         try {
             FileWriter myWriter = new FileWriter("./SavedData.txt");
@@ -207,6 +215,7 @@ public class TrieUpdate {
             e.printStackTrace();
         }
     }
+    // should have done and undone marker for upnodes
     public TrieNode deserialize(String str){
         TrieNode node = new TrieNode();
         ArrayList<TrieNode> stack = new ArrayList<TrieNode>();
@@ -219,8 +228,8 @@ public class TrieUpdate {
             // System.out.println(ch);
             // System.out.println(stack);
             if (str.charAt(i) == ')'){
-                System.out.println(stack.remove(stack.size()-1));
-                System.out.println(ch.remove(ch.size()-1));
+                stack.remove(stack.size()-1);
+                ch.remove(ch.size()-1);
             }
             else{
                 node1 = new TrieNode();
