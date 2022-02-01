@@ -3,7 +3,6 @@ package Tries;
 public class Test {
     public static void main(String[] args) {
         TrieUpdate t = new TrieUpdate();
-        t.searilize();
         System.out.println(t.search("mark"));
         System.out.println(t.search("mark"));
         System.out.println(t.search("marky"));
